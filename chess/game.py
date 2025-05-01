@@ -91,6 +91,8 @@ class Chess:
                 print(i,j)
                 if self.first_selection is not None and (i,j) == self.first_selection:
                     self.buttons[i*8+j].color = "#769656" if (i+j)%2 == 1 else "#EEEED2"
+                    for move in self.possible_move:
+                        self.buttons[move[0]*8+move[1]].color = "#769656" if (move[0]+move[1])%2 == 1 else "#EEEED2"
                     self.first_selection = None
                 elif self.first_selection is None and self.board[i][j] is not None and self.board[i][j].color == self.tour_actuelle:
                     self.first_selection = (i,j)
@@ -99,12 +101,11 @@ class Chess:
 
                     if isinstance(self.board[i][j],pawn): #verification des coups de la piece
                         self.possible_move = self.board[i][j].verif(self.board,i,j,self.pawn_jump) #verification des coups du pion
-                        print("list1",self.possible_move)
-                        if self.possible_move != []:
-                            print("list:",self.possible_move)
-                            for move in self.possible_move:
-                                print(str(move))
-                                self.buttons[move[0]*8+move[1]].color = "#00FF00"
+                    else: #verification des coups de la piece
+                        self.possible_move = self.board[i][j].verif(self.board,i,j) #verification des coups du cavalier
+                    if self.possible_move != []:
+                        for move in self.possible_move:
+                            self.buttons[move[0]*8+move[1]].color = "#00FF00"
 
 
                 elif self.first_selection is not None and self.board[i][j] is not None and self.board[i][j].color != self.tour_actuelle or self.board[i][j] is None and self.first_selection is not None and self.first_selection != (i,j):
@@ -149,14 +150,15 @@ class Chess:
                                         piece.rect.y = self.buttons_upgrade[i].rect.y
                         
 
-
                     self.first_selection = None
+
     def upgrade(self):
         for button in self.buttons_upgrade:
             button.draw()
         for piece in self.buttons_upgrade_board:
             if piece is not None:
                 self.screen.blit(piece.image, piece.rect)
+
     def upgrade_play(self,button):
         if button.rect.collidepoint(pygame.mouse.get_pos()):
             piece = button.action()

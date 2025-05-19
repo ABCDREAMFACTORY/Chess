@@ -209,10 +209,13 @@ class Chess:
                                         piece.rect.y = self.buttons_upgrade[i].rect.y
 
                     if self.tour_actuelle == "White": #Vérification d'echec et mat
-                        self.verif_echec_mat(self.pos_white_king)
+                        mat =self.verif_echec_mat(self.pos_white_king)
                     else:
-                        self.verif_echec_mat(self.pos_black_king)
-                                 
+                        mat = self.verif_echec_mat(self.pos_black_king)
+                    if mat:
+                        print("Echec et mat")
+                    else:
+                        print("continue")
                     self.first_selection = None
     def verif_echec_mat(self,pos_king):
         is_attacked,attaqueur =self.board[pos_king[0]][pos_king[1]].verif_echec(self.board,(pos_king[0],pos_king[1]),verif=True)
@@ -221,7 +224,7 @@ class Chess:
             list_coup = self.board[pos_king[0]][pos_king[1]].verif_echec_mat(self.board,(self.board[pos_king[0]][pos_king[1]].verif(self.board,pos_king[0],pos_king[1])))
             if list_coup == []:
                 if attaqueur is True:
-                    print("Echec et mat !")
+                    return True
                 else:
                     print("possible echec et mat")
                     print(attaqueur)
@@ -250,14 +253,18 @@ class Chess:
                                         #verifier que le roi ne se fait pas attaquer en prenant l'attaqueur
                                         attaqueur_class = self.board[attaqueur[0]][attaqueur[1]]
                                         self.board[attaqueur[0]][attaqueur[1]] = self.board[i][j]
-                                        self.board[i][j] == None
                                         self.board[i][j] = None
                                         if self.board[pos_king[0]][pos_king[1]].verif_echec(self.board,(pos_king[0],pos_king[1])):
                                             print("Ne peux en faite pas")
                                         else:
                                             print("Le peux vraiment")
+                                            self.board[i][j] = self.board[attaqueur[0]][attaqueur[1]]
+                                            self.board[attaqueur[0]][attaqueur[1]] = attaqueur_class
+                                            return False
                                         self.board[i][j] = self.board[attaqueur[0]][attaqueur[1]]
                                         self.board[attaqueur[0]][attaqueur[1]] = attaqueur_class
+                    return True
+            else: return False
 
     def upgrade(self):
         for button in self.buttons_upgrade:

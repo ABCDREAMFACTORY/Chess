@@ -5,21 +5,27 @@ import math
 class Menu_chess:
     def __init__(self, screen , font, SCREEN_WIDTH, SCREEN_HEIGHT):
         self.screen = screen
+        self.font = font
         self.title = font.render("Chess",True,"white")
         button_quit = Button(screen, SCREEN_WIDTH-SCREEN_WIDTH/5,0, SCREEN_WIDTH / 5, SCREEN_HEIGHT / 15, "white", "Retour", (0, 0, 0))
         self.buttons = [button_quit]
         self.game = Chess(screen, font, SCREEN_WIDTH, SCREEN_HEIGHT)
         self.menu = "self"
         self.action = None
+        self.winner = None
     def load(self):
         self.screen.fill("black")
         self.screen.blit(self.title, (self.screen.get_width() / 2 - self.title.get_width() / 2, 0))
+        if self.winner is not None:
+            self.screen.blit(self.winner,(self.screen.get_width()/2-self.winner.get_width()/2,self.title.get_height()))
         for button in self.buttons:
             button.draw()
         for button in self.game.buttons:
             button.draw()
         
         self.game.game_load()
+
+        self.end_of_game()
     def handle_event(self,event):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for button in self.buttons:
@@ -32,6 +38,9 @@ class Menu_chess:
                 else:
                     for button in self.game.buttons_upgrade:
                         self.game.upgrade_play(button)
+    def end_of_game(self):
+        if self.game.winner is not None:
+            self.winner = self.font.render(f"{self.game.winner} has winned",True,"White")
 
 
 class Chess:
@@ -77,6 +86,8 @@ class Chess:
                 piece.rect.y = self.buttons_upgrade[i].rect.y
         self.pos_white_king = [7,4]
         self.pos_black_king = [0,4]
+
+        self.winner = None
     def draw_board(self):
         for row in self.board:
             for piece in row:
@@ -213,6 +224,7 @@ class Chess:
                     else:
                         mat = self.verif_echec_mat(self.pos_black_king)
                     if mat:
+                        self.winner = "Black" if self.tour_actuelle == "White" else "White"
                         print("Echec et mat")
                     else:
                         print("continue")

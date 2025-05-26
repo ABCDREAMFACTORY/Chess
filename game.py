@@ -16,14 +16,13 @@ class Menu_chess:
     def load(self):
         self.screen.fill("black")
         self.screen.blit(self.title, (self.screen.get_width() / 2 - self.title.get_width() / 2, 0))
-        if self.winner is not None:
-            self.screen.blit(self.winner,(self.screen.get_width()/2-self.winner.get_width()/2,self.title.get_height()))
         for button in self.buttons:
             button.draw()
         for button in self.game.buttons:
             button.draw()
-        
         self.game.game_load()
+        if self.winner is not None:
+            self.screen.blit(self.winner,(self.screen.get_width()/2-self.winner.get_width()/2,self.title.get_height()/2))
 
         self.end_of_game()
     def handle_event(self,event):
@@ -114,6 +113,7 @@ class Chess:
                     self.first_selection = None
                     
                 elif self.first_selection is None and self.board[i][j] is not None and self.board[i][j].color == self.tour_actuelle: #Premier click
+                    
                     self.first_selection = (i,j)
                     self.buttons[i*8+j].color = "#f6f669"
 
@@ -130,20 +130,19 @@ class Chess:
                             self.board[move[0]][move[1]] = piece #On test une case possible
                             if self.tour_actuelle == "White":
                                 t = self.board[self.pos_white_king[0]][self.pos_white_king[1]].verif_echec(self.board,(self.pos_white_king[0],self.pos_white_king[1]))
-                                print(t)
+
                             else:
                                 t = self.board[self.pos_black_king[0]][self.pos_black_king[1]].verif_echec(self.board,(self.pos_black_king[0],self.pos_black_king[1]))
-                                print(t)
                                 self.board[i][j] = piece
                             self.board[move[0]][move[1]] = piece_ennemie #On remet la piece ennemie sur la case
                             if t != True:
                                 possible_move_final.append(move) #On retire le coup si le roi est en echec
-                        print(possible_move_final)
                         self.board[i][j] = piece #On remet la piece sur la case
                     else:
                         if self.board[i][j] != None:
                             possible_move_final = self.board[i][j].verif(self.board,i,j)
                     self.possible_move = possible_move_final #On stocke les coups possibles
+
                     if self.possible_move != []:
                         for move in self.possible_move:
                             self.buttons[move[0]*8+move[1]].color = "#00FF00"
@@ -201,9 +200,6 @@ class Chess:
                                     self.board[i+1][j] = None
                                 elif self.board[i][j].color == "Black" and i < 7 and i - 1 == self.pawn_jump[0] and j == self.pawn_jump[1]:
                                     self.board[i-1][j] = None
-                                else:
-                                    print(i-1,j,self.pawn_jump)
-                                    print(i+1,j,self.pawn_jump)
 
                             if self.board[i][j].has_jumped(i,self.first_selection[0]) == True: #verification du saut du pion
                                 self.pawn_jump = (i,j)
@@ -227,50 +223,26 @@ class Chess:
                         if mat:
                             self.winner = "Black" if self.tour_actuelle == "White" else "White"
                             print("Echec et mat")
-                        else:
-                            print("continue")
                         self.first_selection = None
     def verif_echec_mat(self,pos_king):
         is_attacked,attaqueur =self.board[pos_king[0]][pos_king[1]].verif_echec(self.board,(pos_king[0],pos_king[1]),verif=True)
         if is_attacked:
-            print("Echec !")
             list_coup = self.board[pos_king[0]][pos_king[1]].verif_echec_mat(self.board,(self.board[pos_king[0]][pos_king[1]].verif(self.board,pos_king[0],pos_king[1])))
             if list_coup == []:
                 if attaqueur is True:
                     return True
                 else:
-                    print("possible echec et mat")
-                    print(attaqueur)
                     for i in range(8):
                         for j in range(8):
                             if self.board[i][j] is not None and self.board[i][j].color == self.tour_actuelle:
-                                #if isinstance(self.board[i][j], king):
-                                    #if attaqueur in self.board[i][j].verif(self.board, i, j,verif_mat=True):
-                                    #    print("peux se faire attaquer par",(i,j))
-                                     #   #vérifier que attaqueur n'est pas défendu
-                                      #  for k in range(8):
-                                       ##     for l in range(8):
-                                         #       if self.board[k][l] is not None and self.board[k][l].color != self.tour_actuelle:
-                                          #          if isinstance(self.board[i][j], king):
-                                           #             if attaqueur in self.board[i][j].verif(self.board,i,j,verif_mat=True):
-                                            #                print("ne peux en faite pas (roi)")
-                                             #               
-                                              #      else:
-                                               #         if attaqueur in self.board[i][j].verif(self.board,i,j,verif_mat=True):
-                                                #            print("ne peux en faite pas")
-
-                                #else:
                                 if not isinstance(self.board[i][j],king):
                                     if attaqueur in self.board[i][j].verif(self.board, i, j):
-                                        print("peux se faire attaquer par",(i,j))
                                         #verifier que le roi ne se fait pas attaquer en prenant l'attaqueur
                                         attaqueur_class = self.board[attaqueur[0]][attaqueur[1]]
                                         self.board[attaqueur[0]][attaqueur[1]] = self.board[i][j]
                                         self.board[i][j] = None
-                                        if self.board[pos_king[0]][pos_king[1]].verif_echec(self.board,(pos_king[0],pos_king[1])):
-                                            print("Ne peux en faite pas")
-                                        else:
-                                            print("Le peux vraiment")
+                                        if self.board[pos_king[0]][pos_king[1]].verif_echec(self.board,(pos_king[0],pos_king[1])) != True:
+
                                             self.board[i][j] = self.board[attaqueur[0]][attaqueur[1]]
                                             self.board[attaqueur[0]][attaqueur[1]] = attaqueur_class
                                             return False

@@ -1,6 +1,6 @@
 import pygame
-from menu import Menu
-from game import Menu_chess
+from Programs.Menu.menu import Menu
+from Programs.Game.game import Menu_chess
 # Import the Menu class from menu.py
 
 import time
@@ -22,7 +22,6 @@ font = pygame.font.Font("assets/NotoSans-Bold.ttf", SCREEN_WIDTH // 40)
 # Create a font object for the title
 current_menu =  Menu(screen,font, SCREEN_WIDTH, SCREEN_HEIGHT)# Initialize the current menu
 # Initialize the menu
-
 
 # Main loop
 running = True

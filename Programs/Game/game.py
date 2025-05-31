@@ -1,5 +1,5 @@
-from button import Button
-from Pieces import pawn, knight, bishop, rook, queen, king
+from Programs.Utilities.button import Button
+from Programs.Game.Pieces import pawn, knight, bishop, rook, queen, king
 import pygame
 import math
 class Menu_chess:
@@ -23,7 +23,6 @@ class Menu_chess:
         self.game.game_load()
         if self.winner is not None:
             self.screen.blit(self.winner,(self.screen.get_width()/2-self.winner.get_width()/2,self.title.get_height()/2))
-
         self.end_of_game()
     def handle_event(self,event):
             if event.type == pygame.MOUSEBUTTONDOWN:
